@@ -1,9 +1,9 @@
-- name: Install Code server
+- name: Install Code Server
   hosts: all
   vars:
-    cs_archive: https://github.com/coder/code-server/releases/download/v4.9.1/code-server-4.9.1-linux-amd64.tar.gz
+    cs_archive: https://github.com/coder/code-server/releases/download/v4.90.3/code-server-4.90.3-linux-amd64.tar.gz
     cs_dir: /usr/local/opt
-    cs_unpacked: code-server-4.9.1-linux-amd64
+    cs_unpacked: code-server-4.90.3-linux-amd64
   tasks:
   - name: Update OS
     apt:
@@ -12,7 +12,7 @@
 
   - name: Create directories
     file:
-      path: "{{item}}"
+      path: "{{ item }}"
       state: directory
       mode: '0755'
     loop:
@@ -21,14 +21,14 @@
 
   - name: Check if codeserver directory exists
     stat:
-      path: "{{ cs_dir }}/{{cs_unpacked}}"
+      path: "{{ cs_dir }}/{{ cs_unpacked }}"
     register: dir
 
   - name: Download and unarchive codeserver
     unarchive:
-     src: "{{ cs_archive }}"
-     dest: "{{ cs_dir }}"
-     remote_src: yes
+      src: "{{ cs_archive }}"
+      dest: "{{ cs_dir }}"
+      remote_src: yes
     when: not dir.stat.exists
 
   - name: Link directory and binary
@@ -37,43 +37,43 @@
       dest: "{{ item.dest }}"
       state: link
     loop:
-    - src: "{{cs_dir}}/{{cs_unpacked}}"
+    - src: "{{ cs_dir }}/{{ cs_unpacked }}"
       dest: /usr/lib/code-server
-    - src: "{{cs_dir}}/{{cs_unpacked}}/bin/code-server"
+    - src: "{{ cs_dir }}/{{ cs_unpacked }}/bin/code-server"
       dest: /usr/bin/code-server
 
-  - name: Generate codeserver service
-    template:
-      src: code-server.service.j2
+  - name: Copy code-server.service file
+    copy:
+      src: code-server.service
       dest: /lib/systemd/system/code-server.service
 
-  - name: Enable code server service
+  - name: Enable code-server service
     systemd:
       name: code-server
       daemon_reload: true
-      enabled : true
+      enabled: true
       state: started
 
 - name: Install Nginx
   hosts: all
   tasks:
-  - name: Install nginx
+  - name: Install Nginx
     apt:
       name: nginx
       state: latest
 
-  - name: Generate code-server.conf
-    template:
-      src: code-server.conf.j2
+  - name: Copy code-server.conf file
+    copy:
+      src: code-server.conf
       dest: /etc/nginx/sites-available/code-server.conf
 
   - name: Link code-server.conf to /etc/nginx/sites-enabled
     file:
       src: /etc/nginx/sites-available/code-server.conf
-      dest: /etc/nginx/sites-enabled/default
+      dest: /etc/nginx/sites-enabled/code-server.conf
       state: link
 
-  - name: restart nginx
+  - name: restart Nginx
     systemd:
       name: nginx
       state: restarted
