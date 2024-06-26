@@ -5,9 +5,9 @@
     cs_dir: /usr/local/opt
     cs_unpacked: code-server-4.90.3-linux-amd64
   tasks:
-  - name: Pause for 2 minutes to build app cache
+  - name: Pause for 1 minutes before apt update
     ansible.builtin.pause:
-      minutes: 2
+      minutes: 1
   - name: Update OS
     apt:
       update_cache: yes
