@@ -7,6 +7,7 @@ variable do_token {
 variable do_region {
     type = string
     description = "DigitalOcean region"
+    default = "sgp1"
 }
 
 variable do_image {
