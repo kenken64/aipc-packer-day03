@@ -12,6 +12,6 @@ build {
 
   provisioner "ansible" {
     playbook_file = "playbook.yml"
-    extra_arguments = ["-vvvv", "--scp-extra-args", "'-O'", "--ssh-extra-args", "-o IdentitiesOnly=yes -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa"]
+    extra_arguments = ["--scp-extra-args", "'-O'"]
   }
 }
